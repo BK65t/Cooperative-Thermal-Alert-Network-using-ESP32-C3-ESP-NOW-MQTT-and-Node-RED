@@ -1,4 +1,4 @@
-```# Cooperative Thermal Alert Network (CTAN) 🌡️
+# Cooperative Thermal Alert Network (CTAN) 🌡️
 
 ## Overview  
 The Cooperative Thermal Alert Network (CTAN) uses ESP32-C3 devices, DHT11 temperature sensors, and NeoPixel LEDs to monitor temperature across multiple sensor nodes. Nodes communicate locally using ESP-NOW. A gateway aggregates data from all nodes, forwards it via MQTT, and visualizes it on Node-RED. With a duty cycle of ~0.017%, the network is designed for low-power and efficient temperature monitoring and alerting.  
@@ -57,7 +57,7 @@ _(Add more relevant screenshots)_
 /
 ├── Code/                      # ESP32-C3 firmware for nodes & gateway  
 ├── Node-RED Process flow/     # .json or flow definition for Node-RED  
-├── Node-RED dashboard/        # Dashboard UI definition / README  
+├── Node-RED dashboard/        # Dashboard UI definition / config   
 ├── LICENSE                    # Project license (MIT)  
 └── README.md                  # This file  
 ```
@@ -67,4 +67,3 @@ Feel free to fork the project and submit pull-requests. If you find issues or ha
 
 ## License  
 This project is licensed under the terms of the MIT License.  
-```

@@ -215,8 +215,7 @@ void onDataRecv(const esp_now_recv_info_t *info, const uint8_t *data, int len) {
       cfg.groupId    = GROUP_ID;
       cfg.intervalMs = currentIntervalMs;
 
-//      Serial.printf("[GW] Sending interval update to node %u: %lu ms\n",
-//                     msg.nodeId, (unsigned long)currentIntervalMs);
+
 
       esp_now_send(mac, (uint8_t*)&cfg, sizeof(cfg));
 
@@ -237,15 +236,6 @@ void onDataRecv(const esp_now_recv_info_t *info, const uint8_t *data, int len) {
         Serial.printf("[GW] ALERT received but owner already %d\n",
                        alertOwnerNodeId);
       }
-
-//      const char* alertType = "ALERT";
-//      // Default fallback
-//      if (msg.alertCode == 1) {
-//          alertType = "HOT";
-//      } else if (msg.alertCode == 2) { 
-//          alertType = "COLD";
-//      }
-      
       publishAlert(msg, "CRITICAL");
       broadcastAlertState(true);
       break;
@@ -367,3 +357,4 @@ void loop() {
   // Small delay to prevent CPU hogging if loop is tight
   delay(10); 
 }
+

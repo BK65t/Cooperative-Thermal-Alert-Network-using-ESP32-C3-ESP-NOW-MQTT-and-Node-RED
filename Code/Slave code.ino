@@ -104,9 +104,9 @@ void restoreLEDFromRTC()
                 rtcLastAlertCode, r, g, b);
 }
 
-// ========================================================================
+
 // LED CONTROL
-// ========================================================================
+
 void setLED(uint8_t r, uint8_t g, uint8_t b) {
   pixel.setPixelColor(0, pixel.Color(r, g, b));
   pixel.show();
@@ -114,7 +114,7 @@ void setLED(uint8_t r, uint8_t g, uint8_t b) {
 }
 
 void updateLED() {
-    // ⭐ PRIORITY 1: NETWORK ALERT (RED)
+   
     if (localAlertNow || remoteAlertActive) {
         setLED(255, 0, 0); // RED (Critical Alert)
     }
@@ -189,7 +189,7 @@ void onDataSent(const esp_now_send_info_t *info, esp_now_send_status_t status) {
   unsigned long endTime = micros();
   unsigned long activeTime = 0;
 
-  // ⭐ FIX 4: Use the global start time
+  
   if (txStartTime_us > 0) {
     activeTime = endTime - txStartTime_us;
     txStartTime_us = 0; // Reset for the next cycle
@@ -200,9 +200,9 @@ void onDataSent(const esp_now_send_info_t *info, esp_now_send_status_t status) {
                 activeTime);
 }
 
-// ========================================================================
+
 // ESP-NOW + WIFI INIT
-// ========================================================================
+
 void setChannel(int ch) {
   esp_wifi_set_promiscuous(true);
   esp_wifi_set_channel(ch, WIFI_SECOND_CHAN_NONE);
@@ -233,9 +233,7 @@ void initEspNow() {
   Serial.println("[NODE] ESP-NOW ready");
 }
 
-// ========================================================================
-// SENDERS
-// ========================================================================
+
 void sendHello() {
   EspNowMessage msg = {};
   msg.type = MSG_HELLO;
@@ -254,7 +252,7 @@ void sendTelemetry() {
   msg.temperature = lastTemp;
   msg.humidity    = lastHum;
 
-  //By Lucas
+
   txStartTime_us = micros();
   Serial.printf("[TX] Sending Telemetry at: %lu us\n", txStartTime_us);
   
@@ -273,9 +271,7 @@ void sendAlert(uint8_t code, bool clear) {
   esp_now_send(gatewayMac, (uint8_t*)&msg, sizeof(msg));
 }
 
-// ========================================================================
-// SCAN FOR GATEWAY (first boot)
-// ========================================================================
+
 bool scanForGateway() {
   Serial.println("[NODE] Scanning for gateway...");
 
@@ -295,9 +291,8 @@ bool scanForGateway() {
   return false;
 }
 
-// ========================================================================
 // DEEP SLEEP
-// ========================================================================
+
 void goToSleep() {
   uint32_t s = rtcIntervalMs;
   if (s < 1000) s = 1000;
@@ -309,18 +304,6 @@ void goToSleep() {
 }
 
 
-//void sendTelemetry() {
-//    if (!rtcPaired) return;
-//    unsigned long startTime = micros(); // ⭐ Start time in microseconds
-//    // ... (Build message) ...
-//    esp_now_send(gatewayMac, (uint8_t*)&msg, sizeof(msg));
-//    // You would typically print startTime here, but it's better to print the time difference in the callback.
-//}
-
-
-// ========================================================================
-// SETUP
-// ========================================================================
 void setup() {
   Serial.begin(115200);
   delay(2000);
@@ -328,7 +311,6 @@ void setup() {
   pixel.begin();
   pixel.show();
 
-  // ⭐ Restore last LED instantly
   restoreLEDFromRTC();
 
   dht.begin();
@@ -345,21 +327,21 @@ void setup() {
 
   setChannel(rtcChannel);
 
-  // ---- Read DHT ----
+ 
   lastTemp = dht.readTemperature();
   lastHum  = dht.readHumidity();
 
-  // ---- Local alert ----
+  
   localAlertNow = false;
   localAlertCode = 0;
 
   if (!isnan(lastTemp)) {
-    // ⭐ CRITICAL HOT ALERT (T >= 30.0)
+  
     if (lastTemp >= HOT_THRESHOLD) { 
         localAlertNow = true; 
         localAlertCode = 1; // 1 = HOT
     }
-    // ⭐ CRITICAL COLD ALERT (T <= 0.0) - Triggers broadcast
+
     else if (lastTemp <= COLD_THRESHOLD) { 
         localAlertNow = true; 
         localAlertCode = 2; // 2 = COLD
@@ -370,19 +352,18 @@ void setup() {
   }
   sendTelemetry();
 
-  // ---- Listen for broadcasts ----
+  
   unsigned long t = millis();
   while (millis() - t < 500) delay(10);
 
-  // ---- LED ----
+ 
   updateLED();
 
-  // ---- Sleep ----
+  
   goToSleep();
 }
 
-// ========================================================================
-// LOOP (unused)
-// ========================================================================
+
 void loop() {
   }
+

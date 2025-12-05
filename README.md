@@ -1,69 +1,158 @@
-# Cooperative Thermal Alert Network (CTAN) using ESP32,ESP-NOW,MQTT,Node-RED
+# Cooperative Thermal Alert Network (CTAN)
+A distributed thermal-monitoring system using **ESP32-C3**, **ESP-NOW**, **HiveMQ Cloud (MQTT)**, and **Node-RED**.  
+Multiple sensor nodes measure temperature, send data wirelessly to a gateway, and display real-time dashboards and alerts.
 
-## Overview  
-The Cooperative Thermal Alert Network (CTAN) uses ESP32-C3 devices, DHT11 temperature sensors, and NeoPixel LEDs to monitor temperature across multiple sensor nodes. Nodes communicate locally using ESP-NOW. A gateway aggregates data from all nodes, forwards it via MQTT, and visualizes it on Node-RED. With a duty cycle of ~0.017%, the network is designed for low-power and efficient temperature monitoring and alerting.  
+---
 
-## Features  
-- Distributed temperature sensing using multiple ESP32-C3 nodes  
-- Local communication between nodes over ESP-NOW (no WiFi infrastructure required for nodes)  
-- Central gateway that publishes data to MQTT broker  
-- Real-time visualization and alerting via Node-RED dashboard  
-- Low-power node operation thanks to duty-cycle scheduling  
+## Overview
+The **Cooperative Thermal Alert Network (CTAN)** monitors temperature across multiple locations using ESP32-C3 sensor nodes equipped with DHT11 sensors.  
+Nodes communicate with the gateway using **ESP-NOW**, a lightweight and WiFi-free protocol ideal for low-power IoT systems.
 
-## System Architecture  
-*(Optional: Insert a small diagram or ASCII art of how sensor nodes → gateway → MQTT → Node-RED relate.)*  
+The gateway publishes collected data securely to **HiveMQ Cloud**, and **Node-RED** subscribes to these MQTT topics to visualize real-time readings and historical trends.
+
+This system is suitable for:
+- Multi-room temperature monitoring  
+- IoT learning and experimentation  
+- Low-power wireless sensor networks  
+- Distributed alert systems  
+
+---
+
+##  Features
+- 4 ESP32-C3 sensor nodes  
+- Lightweight ESP-NOW wireless communication  
+- Secure cloud MQTT communication using **HiveMQ Cloud**  
+- Real-time dashboards for each node  
+- Historical temperature charts  
+- Fully scalable architecture  
+
+---
+
+## System Architecture
 
 ```
-Sensor Node (ESP32-C3 + DHT11 + NeoPixel)  ── ESP-NOW ➜  Gateway (ESP32-C3)  ── MQTT ➜  Node-RED Dashboard / Alerts
+ESP32-C3 Sensor Nodes (DHT11 + NeoPixel)
+            │
+            │  ESP-NOW
+            ▼
+       ESP32-C3 Gateway
+            │
+            │  MQTT (TLS)
+            ▼
+       HiveMQ Cloud Broker
+            │
+            │  MQTT Subscribe
+            ▼
+        Node-RED Dashboard
 ```
 
-## Getting Started  
+---
 
-### Prerequisites  
-- ESP32-C3 microcontroller boards  
-- DHT11 sensors for each node  
-- NeoPixel LED (or similar LED) for alert indication (optional)  
-- MQTT broker (local or cloud)  
-- Computer running Node-RED for dashboard  
+# Getting Started
 
-### Installation & Setup  
-1. Clone this repository:  
-   ```sh
-   git clone https://github.com/BK65t/Cooperative-Thermal-Alert-Network-using-ESP32-C3-ESP-NOW-MQTT-and-Node-RED.git
-   ```  
-2. Flash sensor-node firmware onto each ESP32-C3 board (see `/Code` folder).  
-3. Flash gateway firmware onto one ESP32-C3 board (also in `/Code`).  
-4. Configure MQTT broker credentials and broker URL in the gateway code.  
-5. Start your MQTT broker.  
-6. Import and run the Node-RED flow in `/Node-RED Process flow`.  
-7. Open the Node-RED dashboard (`/Node-RED dashboard`) to see real-time readings and alerts.  
+## Requirements
+- ESP32-C3 boards  
+- DHT11 temperature sensors  
+- HiveMQ Cloud (Free Tier) MQTT account  
+- Node-RED installed (PC, Laptop, or Raspberry Pi)  
+- USB programming cable  
 
-## Usage Example  
-Once set up and running:  
-- Sensor nodes periodically measure temperature and send data to the gateway via ESP-NOW.  
-- The gateway publishes data to MQTT.  
-- Node-RED subscribes to MQTT topics, displays temperature data on the dashboard, and triggers alerts (e.g., LED on sensor node) when thresholds are exceeded.  
+---
 
-*(Add screenshots of the Node-RED dashboard, sensor data, or alert LEDs below.)*  
+## 🔌 HiveMQ Cloud Setup (MQTT)
 
-## Demo / Screenshots  
-![Node-RED Dashboard](images/node-red-dashboard.png)  
-![Sensor Node Setup](images/sensor-node-esp32-dht11.png)  
-_(Add more relevant screenshots)_  
+1. Visit **https://console.hivemq.cloud/**  
+2. Create a **Free Cluster**  
+3. Create MQTT credentials (username + password)  
+4. Copy your cluster hostname, e.g.:
+   ```
+   a12b345cdefg.s1.eu.hivemq.cloud
+   ```
+5. Use port **8883** for secure TLS communication  
+6. Update the Gateway ESP32-C3 code:
 
-## Folder Structure  
+```cpp
+const char* mqtt_server = "your-hivemq-cloud-hostname";
+const int mqtt_port = 8883;
+const char* mqtt_user = "your-username";
+const char* mqtt_password = "your-password";
+```
+
+---
+
+## Installing and Running the Project
+
+### Clone the repository
+```sh
+git clone https://github.com/BK65t/Cooperative-Thermal-Alert-Network-using-ESP32-C3-ESP-NOW-MQTT-and-Node-RED.git
+```
+
+### Flash code to sensor nodes
+- Open `/Code` folder  
+- Upload the **node firmware** to each ESP32-C3  
+- Configure each node with a unique ID  
+
+### Flash code to the gateway
+- Upload the **gateway firmware**  
+- Make sure your HiveMQ credentials are correct  
+
+### Set up Node-RED
+- Import the flow from `/Node-RED Process flow`  
+- Ensure the MQTT nodes use **HiveMQ Cloud (TLS)** with your credentials  
+- Deploy the flow  
+
+### View your dashboard
+Open your browser:
+
+```
+http://localhost:1880/ui
+```
+
+You will now see live temperature monitoring.
+
+---
+
+# Folder Structure
 
 ```
 /
-├── Code/                      # ESP32-C3 firmware for nodes & gateway  
-├── Node-RED Process flow/     # .json or flow definition for Node-RED  
-├── Node-RED dashboard/        # Dashboard UI definition / config   
-├── LICENSE                    # Project license (MIT)  
-└── README.md                  # This file  
+├── Code/                         # Firmware for nodes and gateway
+├── Node-RED Process flow/        # Node-RED flow JSON
+├── Node-RED dashboard/           # Screenshots used in README
+├── LICENSE                       # MIT License
+└── README.md                     # Documentation
 ```
 
-## Contributing  
-Feel free to fork the project and submit pull-requests. If you find issues or have suggestions — please open an issue.  
+---
 
-## License  
-This project is licensed under the terms of the MIT License.  
+# Node-RED Dashboard Screenshots
+
+## Node Dashboards  
+
+### **Node 1 Dashboard**
+![Node 1 Dashboard](Node-RED%20dashboard/Node%201%20dashboard.jpg)
+
+### **Node 2 Dashboard**
+![Node 2 Dashboard](Node-RED%20dashboard/Node%202%20dashboard.jpg)
+
+### **Node 3 Dashboard**
+![Node 3 Dashboard](Node-RED%20dashboard/Node%203%20dashboard.jpg)
+
+### **Node 4 Dashboard**
+![Node 4 Dashboard](Node-RED%20dashboard/Node%204%20dashboard.jpg)
+
+---
+
+## Historical Temperature Charts  
+
+### **Node 1 & Node 2 Historical Chart**
+![Historical Chart Node 1 and 2](Node-RED%20dashboard/Historical%20chart%20of%20Node%201%20and%20Node%202.jpg)
+
+### **Node 3 & Node 4 Historical Chart**
+![Historical Chart Node 3 and 4](Node-RED%20dashboard/Historical%20chart%20of%20Node%203%20and%20Node%204.jpg)
+
+---
+
+# License
+This project is licensed under the **MIT License**.
+

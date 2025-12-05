@@ -1,4 +1,4 @@
-# Cooperative Thermal Alert Network (CTAN)
+#  Cooperative Thermal Alert Network (CTAN)
 A distributed thermal-monitoring system using **ESP32-C3**, **ESP-NOW**, **HiveMQ Cloud (MQTT)**, and **Node-RED**.  
 Multiple sensor nodes measure temperature, send data wirelessly to a gateway, and display real-time dashboards and alerts.
 
@@ -18,7 +18,7 @@ This system is suitable for:
 
 ---
 
-##  Features
+## Features
 - 4 ESP32-C3 sensor nodes  
 - Lightweight ESP-NOW wireless communication  
 - Secure cloud MQTT communication using **HiveMQ Cloud**  
@@ -30,21 +30,8 @@ This system is suitable for:
 
 ## System Architecture
 
-```
-ESP32-C3 Sensor Nodes (DHT11 + NeoPixel)
-            │
-            │  ESP-NOW
-            ▼
-       ESP32-C3 Gateway
-            │
-            │  MQTT (TLS)
-            ▼
-       HiveMQ Cloud Broker
-            │
-            │  MQTT Subscribe
-            ▼
-        Node-RED Dashboard
-```
+
+![System Architecture](images/SystemArchitecture.jpeg)
 
 ---
 
@@ -59,7 +46,7 @@ ESP32-C3 Sensor Nodes (DHT11 + NeoPixel)
 
 ---
 
-## 🔌 HiveMQ Cloud Setup (MQTT)
+## HiveMQ Cloud Setup (MQTT)
 
 1. Visit **https://console.hivemq.cloud/**  
 2. Create a **Free Cluster**  

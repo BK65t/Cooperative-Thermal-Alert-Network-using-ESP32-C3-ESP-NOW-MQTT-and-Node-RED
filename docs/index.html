@@ -193,6 +193,55 @@
         font-size: 1rem;
       }
     }
+    .video-row {
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin: 20px 0;
+    }
+
+    .video-card {
+      flex: 1;
+      min-width: 280px;
+      text-align: center;
+    }
+
+    .video-card img {
+      width: 100%;
+      height: auto;
+      border-radius: 0.35rem;
+      border: 1px solid #e5e7eb;
+      display: block;
+    }
+
+    .video-card a {
+      text-decoration: none;
+      color: #111827;
+    }
+
+    .video-card p {
+      margin-top: 0.5rem;
+      font-weight: 500;
+    }
+
+    .github-link {
+      margin-top: 1rem;
+      padding-top: 0.8rem;
+      border-top: 1px solid #e5e7eb;
+      text-align: center;
+    }
+
+    .github-link a {
+      font-size: 1rem;
+      color: #2563eb;
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    .github-link a:hover {
+      text-decoration: underline;
+    }
   </style>
 </head>
 <body>
@@ -208,6 +257,14 @@
 
     </header>
 
+    <section class="toc">
+      <div class="github-link">
+          <p style="font-size: 20px; font-weight: 600;">Link to the Code Repository</p>
+          <a href="https://github.com/BK65t/Cooperative-Thermal-Alert-Network-using-ESP32-C3-ESP-NOW-MQTT-and-Node-RED.git" target="_blank">
+            🔗 View Project Source Code on GitHub
+          </a>
+      </div>
+    </section>
     <section class="toc">
       <h3>Contents</h3>
       <ul>
@@ -1253,6 +1310,33 @@
       <section id="testing-validation">
         <h2>8. Testing and Validation</h2>
 
+        <h3>Project Demonstration Videos</h3>
+
+        <div class="video-row">
+          <!-- Video 1 -->
+          <div class="video-card">
+            <h3>Working Video 1</h3>
+            <a href="https://youtube.com/shorts/YFBoC1_5ANc" target="_blank" rel="noopener">
+              <img
+                src="https://img.youtube.com/vi/YFBoC1_5ANc/hqdefault.jpg"
+                alt="Working Video 1 thumbnail"
+              />
+              <p>Watch on YouTube</p>
+            </a>
+          </div>
+
+          <!-- Video 2 -->
+          <div class="video-card">
+            <h3>Working Video 2</h3>
+            <a href="https://youtube.com/shorts/xtSbnYjOAtc" target="_blank" rel="noopener">
+              <img
+                src="https://img.youtube.com/vi/xtSbnYjOAtc/hqdefault.jpg"
+                alt="Working Video 2 thumbnail"
+              />
+              <p>Watch on YouTube</p>
+            </a>
+          </div>
+        </div>
         <table>
           <thead>
             <tr>
@@ -1476,3 +1560,4 @@
   </div>
 </body>
 </html>
+

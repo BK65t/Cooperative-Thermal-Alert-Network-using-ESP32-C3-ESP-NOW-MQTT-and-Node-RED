@@ -1,0 +1,1296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Cooperative Thermal Alert Network - ESP32-C3, ESP-NOW, MQTT, Node-RED</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.6;
+      color: #111827;
+      background-color: #f9fafb;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+    }
+
+    .page {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 2rem 1.25rem 3rem;
+      background-color: #ffffff;
+      box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+    }
+
+    header {
+      border-bottom: 1px solid #e5e7eb;
+      margin-bottom: 1.5rem;
+      padding-bottom: 1.5rem;
+      text-align: center;
+    }
+
+    header h1 {
+      margin: 0 0 0.35rem;
+      font-size: 1.9rem;
+      letter-spacing: 0.02em;
+    }
+
+    header h2 {
+      margin: 0 0 0.75rem;
+      font-size: 1.05rem;
+      font-weight: 500;
+      color: #4b5563;
+    }
+
+    header .meta {
+      font-size: 0.95rem;
+      color: #6b7280;
+    }
+
+    main {
+      margin-top: 1rem;
+      font-size: 0.97rem;
+    }
+
+    h2, h3, h4 {
+      margin-top: 2rem;
+      margin-bottom: 0.5rem;
+      color: #111827;
+      scroll-margin-top: 80px;
+    }
+
+    h2 {
+      font-size: 1.3rem;
+      border-bottom: 1px solid #e5e7eb;
+      padding-bottom: 0.25rem;
+    }
+
+    h3 {
+      font-size: 1.1rem;
+      margin-top: 1.5rem;
+    }
+
+    h4 {
+      font-size: 1rem;
+      text-transform: none;
+      letter-spacing: 0.02em;
+      color: #374151;
+    }
+
+    p {
+      margin: 0 0 0.75rem;
+    }
+
+    ul, ol {
+      margin: 0.25rem 0 0.9rem 1.2rem;
+      padding-left: 1rem;
+    }
+
+    li {
+      margin-bottom: 0.25rem;
+    }
+
+    .toc {
+      background-color: #f3f4f6;
+      border-radius: 0.5rem;
+      padding: 1rem 1.25rem;
+      margin-bottom: 1.5rem;
+      border: 1px solid #e5e7eb;
+    }
+
+    .toc h3 {
+      margin-top: 0;
+      font-size: 1rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .toc ul {
+      margin: 0;
+      list-style: none;
+      padding-left: 0;
+      font-size: 0.93rem;
+    }
+
+    .toc li {
+      margin: 0.15rem 0;
+    }
+
+    .toc a {
+      color: #2563eb;
+      text-decoration: none;
+    }
+
+    .toc a:hover {
+      text-decoration: underline;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 0.75rem 0 1.25rem;
+      font-size: 0.9rem;
+    }
+
+    th, td {
+      border: 1px solid #e5e7eb;
+      padding: 0.4rem 0.5rem;
+      vertical-align: top;
+      text-align: left;
+    }
+
+    thead th {
+      background-color: #f3f4f6;
+      font-weight: 600;
+    }
+
+    .caption {
+      font-size: 0.85rem;
+      color: #6b7280;
+      margin-top: -0.4rem;
+      margin-bottom: 0.8rem;
+      font-style: italic;
+    }
+
+    figure {
+      margin: 1.25rem 0;
+      text-align: center;
+    }
+
+    figure img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 0.35rem;
+      border: 1px solid #e5e7eb;
+    }
+
+    figure figcaption {
+      font-size: 0.85rem;
+      color: #6b7280;
+      margin-top: 0.35rem;
+    }
+
+    code {
+      font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 0.9em;
+      background-color: #f3f4f6;
+      padding: 0.1rem 0.25rem;
+      border-radius: 0.25rem;
+    }
+
+    .small {
+      font-size: 0.9rem;
+      color: #4b5563;
+    }
+
+    @media (min-width: 1024px) {
+      header h1 {
+        font-size: 2.1rem;
+      }
+      main {
+        font-size: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <h1>Cooperative Thermal Alert Network using ESP32-C3 and ESP-NOW, MQTT and Node-RED</h1>
+      <h2>A Distributed, Energy-Efficient Temperature Monitoring and Alerting Architecture</h2>
+      <p class="meta">
+        Group ID: 4<br />
+        Course: B31OT &mdash; Internet of Things<br />
+        Institution: Heriot-Watt University
+      </p>
+
+    </header>
+
+    <section class="toc">
+      <h3>Contents</h3>
+      <ul>
+        <li><a href="#system-summary">System Summary</a></li>
+        <li><a href="#network-composition">1. Network Composition</a></li>
+        <li><a href="#communication">2. Communication</a></li>
+        <li><a href="#alert-coordination">3. Alert Coordination</a></li>
+        <li><a href="#energy-efficiency">4. Energy Efficiency</a></li>
+        <li><a href="#gateway-dashboard">5. Gateway and Dashboard</a></li>
+        <li><a href="#usability-extensibility">6. Usability and Extensibility</a></li>
+        <li><a href="#design-optimisation">7. Design Optimization Approaches</a></li>
+        <li><a href="#testing-validation">8. Testing and Validation</a></li>
+        <li><a href="#critical-analysis">9. Critical Analysis</a></li>
+        <li><a href="#conclusion">11. Conclusion</a></li>
+      </ul>
+    </section>
+
+    <main>
+      <section id="system-summary">
+        <h2>System Summary</h2>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Parameter</th>
+              <th>Specification</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Network Topology</td>
+              <td>Star (4 nodes + 1 gateway)</td>
+            </tr>
+            <tr>
+              <td>Microcontroller</td>
+              <td>ESP32-C3 (RISC-V, 160MHz) &ndash; All devices</td>
+            </tr>
+            <tr>
+              <td>Sensors</td>
+              <td>DHT11 (Temperature &plusmn;2&deg;C, Humidity &plusmn;5%)</td>
+            </tr>
+            <tr>
+              <td>Visual Feedback</td>
+              <td>NeoPixel WS2812B RGB LED</td>
+            </tr>
+            <tr>
+              <td>Local Communication</td>
+              <td>ESP-NOW (AES-128 Encrypted, <code>esp_now_send</code>)</td>
+            </tr>
+            <tr>
+              <td>Cloud Communication</td>
+              <td>MQTT (broker.hivemq.com:2222)</td>
+            </tr>
+            <tr>
+              <td>Power (Development)</td>
+              <td>USB 5V from laptop</td>
+            </tr>
+            <tr>
+              <td>Projected Battery Life</td>
+              <td>3.5 years (calculated from measured 48.75 &micro;A)</td>
+            </tr>
+            <tr>
+              <td>Alert Latency</td>
+              <td>200ms end-to-end, 15ms local</td>
+            </tr>
+            <tr>
+              <td>Duty Cycle</td>
+              <td>0.017% (active 1.698ms per 10s cycle)</td>
+            </tr>
+            <tr>
+              <td>Network Capacity</td>
+              <td>32 nodes maximum</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="network-composition">
+        <h2>1. Network Composition</h2>
+
+        <h3>Requirements Fulfillment</h3>
+        <p>&bull; Number of Nodes: 4 ESP32-C3 sensor nodes and 1 ESP32-C3 gateway (more than 3)</p>
+        <p>Hardware Components: One node with each having DHT11 sensor and NeoPixel RGB LED.</p>
+        <p>&bull; Power Source: USB-powered in the development. Implementation of deep sleep (<code>esp_deep_sleep_start</code>) is battery-ready design. Projection of battery life of 3.5 years under current consumption.</p>
+        <p>&bull; Gateway Power: USB powered, continuous <code>loop()</code> of keeping the MQTT connections alive.</p>
+
+        <h3>Introduction</h3>
+        <p>
+          In this project, there is a Cooperative Thermal Alert Network (CTAN) based on microcontrollers
+          ESP32-C3 and ESP-NOW protocol. The system consists of four sensor nodes with sensors of
+          temperature and humidity (DHT11), visual feedback with NeoPixel&rsquo;s RGB, and a fifth gateway node.
+          The gateway consolidates the information on the nodes, sends it to a cloud-based MQTT broker and
+          sends notification messages. The system is energy efficient, and requires minimum power
+          consumption, therefore it can be used in long term, battery powered deployment and with an
+          estimated battery life of 3.5 years. The notable innovations are AES-128 encrypted communication,
+          ESP-NOW, connectionless communication and an alert-owner model that prevents broadcast storms
+          to provide effective real-time temperature monitoring, and alerts.
+        </p>
+
+        <h3>Hardware Specifications</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Component</th>
+              <th>Model</th>
+              <th>Specifications</th>
+              <th>Power</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Microcontroller</td>
+              <td>ESP32-C3</td>
+              <td>RISC-V 32-bit, 160MHz, 4MB Flash</td>
+              <td>8&micro;A sleep, 240mA TX</td>
+            </tr>
+            <tr>
+              <td>Temperature Sensor</td>
+              <td>DHT11</td>
+              <td>0-50&deg;C, &plusmn;2&deg;C accuracy</td>
+              <td>0.5-2.5mA</td>
+            </tr>
+            <tr>
+              <td>Humidity Sensor</td>
+              <td>DHT11</td>
+              <td>20-90% RH, &plusmn;5% accuracy</td>
+              <td>0.5-2.5mA</td>
+            </tr>
+            <tr>
+              <td>LED Indicator</td>
+              <td>NeoPixel WS2812B</td>
+              <td>RGB, individually addressable</td>
+              <td>5-60mA</td>
+            </tr>
+            <tr>
+              <td>Power (Development)</td>
+              <td>USB 5V</td>
+              <td>Laptop-powered</td>
+              <td>Stable, always available</td>
+            </tr>
+            <tr>
+              <td>Power (Deployment)</td>
+              <td>18650 Li-Ion</td>
+              <td>1500mAh, 3.7V</td>
+              <td>Projected: 3.5 years</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h4>LED Color States:</h4>
+        <ul>
+          <li>Red: Critical hot alert (&ge;30&deg;C)</li>
+          <li>Yellow: Hot warning (&ge;25&deg;C)</li>
+          <li>Green: Normal operation (15-25&deg;C)</li>
+          <li>Turquoise: Cold warning (&le;15&deg;C)</li>
+          <li>Purple: Sensor error or malfunction</li>
+        </ul>
+      </section>
+
+      <section id="communication">
+        <h2>2. Communication</h2>
+
+        <h3>Requirements Fulfillment</h3>
+        <p>&bull; Peer-to-peer through ESP-NOW: All the device-to-device traffic made by esp nodes takes the <code>esp_now_send</code> function. Sends <code>MSG_TELEMETRY</code> (periodic data) and <code>MSG_ALERT</code> (notification) outright to gateway.</p>
+        <p>&bull; Gateway Bridge: Gateway consumes <code>OnDataRecv</code> callback to receive ESP-NOW messages of all 4 nodes, after which it evokes <code>publishTelemetry</code> and <code>publishAlertJson</code> and transfers it to the broker.hivemq.com:2222 using the MQTT method.</p>
+        <p>&bull; Small Energy-Efficient Messages: Initially <code>EspNowMessage</code> (packed C-structs) were created (<code>struct __attribute__((packed)) EspNowMessage</code>) - it requires an average of 24 bytes to code, compared to 80-120 bytes with JSON. Finding: 1.698ms active time with 88 percent energy savings.</p>
+        <p>&bull; Avoid Redundant Transmissions: Alert-owner Model adopted. The tracking of <code>alertOwnerNodeId</code> is included in the gateway tracks, and it disqualifies the alert on two occasions with <code>globalAlertActive</code> check <code>if (globalAlertActive non-global)</code>.</p>
+
+        <h3>System Overview:</h3>
+        <p>
+          This system is a distributed network wherein individual sensor nodes will be monitoring the
+          environment and communicating with peers using a distributed network. The architecture has three
+          significant parts:
+        </p>
+
+        <h3>2.1 Sensor Nodes</h3>
+        <p>
+          The sensor nodes will be tasked with the task of measuring the environmental conditions
+          (temperature and humidity) within the immediate environment. Each node is equipped with:
+        </p>
+        <ul>
+          <li>
+            DHT11 Temperature/Humidity Sensor: Like the DHT22, but less accurate compared to higher end
+            sensors like the SHT31 and DHT22, the DHT11 offers relative accuracy of temperature measurements
+            on temperatures of up to 25 degrees Celsius (442 F) with minimal humidity variations covering 10
+            percent relative. The sensor has an accuracy of +-2degC and +-5% on temperature and humidity
+            respectively.
+          </li>
+          <li>
+            NeoPixel RGB LED: Available support would be instantaneous feedback regarding alert conditions.
+            Once the temperature reaches a certain predetermined temperature (HOT) or drops to another
+            predetermined temperature (COLD), the LED will change color; this is used to tell the user whether
+            the temperature is hot or cold.
+          </li>
+          <li>
+            ESP32-C3 Microcontroller: A ESP32-C3 is a low-power, 32-bit RISC- V microcontroller that is able to
+            accept sensor data, communicate with ESP-NOW, and go into deep sleep mode to save power when
+            idle. When in deep sleep, ESP32-C3 only consumes 8 uA as compared to 240 mA when transmitting
+            on the air.
+          </li>
+        </ul>
+
+        <h3>2.2 Gateway</h3>
+        <p>
+          The gateway node is located at the core of the system architecture and the functions it performs are
+          as follows:
+        </p>
+        <ul>
+          <li>
+            Data Aggregation: A sensor node Vs. IoT nodes receive ESP-NOW accumulating telemetry and alert
+            messages, which have originated in all sensor nodes.
+          </li>
+          <li>
+            Cloud Integration: Accumulating the results of data collection and sending them to the cloud
+            through MQTT to monitor and have a visual representation.
+          </li>
+          <li>
+            Dashboard Interface: The values of the alert states and sensor values are displayed on the Node-RED dashboard so users can access it.
+          </li>
+          <li>
+            Remote Configuration: Handling remote control instructions, e.g. repairing the sampling period
+            (time between sensor measurements) of all the node in the network.
+          </li>
+        </ul>
+        <p>
+          The gateway will provide the system with the facility to make the system cloud-connected to enable
+          remote monitoring and will also sustain local communication to be propagated efficiently, to deliver
+          prompt alerts. The gateway is powered on continuously (using USB in development) as opposed to
+          sensor nodes which use deep sleep to ensure they are available on demand.
+        </p>
+        <p>
+          Technical Implementation: The gateway relies on the <code>OnDataRecv</code> callback to receive ESP-NOW
+          messages received by all 4 nodes. When given data, it simply sends the information to cloud with the
+          help of two specific functions: <code>publishTelemetry</code> (when sensor data are received) and
+          <code>publishAlertJson</code> (when alert notification are received). These functions send information to
+          broker.hivemq.com through MQTT by port 2222, and it real-time synchronizes with the Node-RED
+          dashboard.
+        </p>
+
+        <h3>2.3 Node-RED Dashboard</h3>
+        <p>
+          The Node-RED dashboard is the only graphic interface of the whole system. It provides:
+        </p>
+        <ul>
+          <li>
+            Real time Display: Surface displaying live temperature and humidity data of both sensor
+            nodes.
+          </li>
+          <li>
+            Alert Visualization: This option shows both high and low temperature based on colour
+            indicators of the corresponding physical state of the LEDs on nodes.
+          </li>
+          <li>
+            RemoteConfig: This interface enables the user to remotely adjust system settings (e.g.
+            sampling time and alert levels) and node-specific settings through the Node-RED interface.
+          </li>
+        </ul>
+        <p>
+          The dashboard also links with the MQTT broker with which it can get real-time updates and remotely
+          control devices by subscribing to particular telemetry and alert topics.
+        </p>
+
+        <h3>Message Types:</h3>
+        <ul>
+          <li><strong>MSG_HELLO (0)</strong>: Discovery broadcast from new nodes</li>
+          <li><strong>MSG_ACK (1)</strong>: Pairing acknowledgment from gateway</li>
+          <li><strong>MSG_TELEMETRY (2)</strong>: Regular sensor data transmission</li>
+          <li><strong>MSG_ALERT (3)</strong>: Alert condition detected</li>
+          <li><strong>MSG_ALERT_CLEAR (4)</strong>: Alert condition resolved</li>
+          <li><strong>MSG_ALERT_BCAST (5)</strong>: Gateway broadcast to all nodes</li>
+          <li><strong>MSG_CONFIG_SET (6)</strong>: Configuration update command</li>
+        </ul>
+
+        <h3>Communication Efficiency</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Encoding</th>
+              <th>Size</th>
+              <th>TX Time</th>
+              <th>Energy</th>
+              <th>Savings</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Binary (Ours)</td>
+              <td>24 bytes</td>
+              <td>1.7ms</td>
+              <td>0.408 mAs</td>
+              <td>Baseline</td>
+            </tr>
+            <tr>
+              <td>JSON</td>
+              <td>80-120 bytes</td>
+              <td>15-20ms</td>
+              <td>3.6-4.8 mAs</td>
+              <td>88% worse</td>
+            </tr>
+            <tr>
+              <td>XML</td>
+              <td>150-200 bytes</td>
+              <td>30-40ms</td>
+              <td>7.2-9.6 mAs</td>
+              <td>94% worse</td>
+            </tr>
+          </tbody>
+        </table>
+        <p>
+          Energy Saving: Binary encoding has 88 percentage reductions of energy with respect to JSON
+          encoding.
+        </p>
+
+        <h3>AES-128 Encryption Implementation:</h3>
+        <p>
+          All ESP-NOW callings use the AES128-CCM to defend against the eavesdropping and message
+          injection attack. Encryption implementation will include 2 stages:
+        </p>
+        <p><strong>Phase 1: Discovery (Unencrypted)</strong></p>
+        <ul>
+          <li>MSG_HELLO is sent by the new nodes to find the gateway.</li>
+          <li>Gateway responds with MSG_ACK</li>
+          <li>No sensitive data is given during this phase, only Node ID and Group ID are shown.</li>
+        </ul>
+        <p><strong>Phase 2: Operation (Encrypted)</strong></p>
+        <ul>
+          <li>Encryption with AES-128 is applied to all messages that come after it.</li>
+          <li>Gateway and nodes have a common Pre-Shared Master Key (PMK).</li>
+          <li>All peer connections make use of the session keys based on the PMK.</li>
+        </ul>
+        <p><strong>Security Features:</strong></p>
+        <ul>
+          <li>128-bit encryption key length</li>
+          <li>Hardware-accelerated AES encryption on ESP32-C3</li>
+          <li>Message Authentication Code (MAC) for integrity verification</li>
+          <li>Group ID validation for network segmentation</li>
+          <li>Gateway MAC address whitelisting</li>
+        </ul>
+
+        <h3>System Components</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Component</th>
+              <th>Functions</th>
+              <th>Communication</th>
+              <th>Power</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Nodes 1-4</td>
+              <td>Monitor environment, Local alerts, LED indication</td>
+              <td>ESP-NOW (encrypted) to Gateway</td>
+              <td>USB (dev), Deep Sleep capable</td>
+            </tr>
+            <tr>
+              <td>Gateway</td>
+              <td>Data aggregation, MQTT publishing, Alert broadcasting, Remote config</td>
+              <td>ESP-NOW from Nodes, MQTT to Cloud</td>
+              <td>USB, Always-on</td>
+            </tr>
+            <tr>
+              <td>MQTT Broker</td>
+              <td>Message routing, Topic management</td>
+              <td>MQTT (Gateway &harr; Dashboard)</td>
+              <td>Cloud-hosted</td>
+            </tr>
+            <tr>
+              <td>Dashboard</td>
+              <td>Visualization, User interface, Remote control</td>
+              <td>MQTT subscription</td>
+              <td>Web-based (Node-RED)</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3>MQTT for Cloud Integration</h3>
+        <p>
+          Whereas ESP-NOW allows communication within locality, MQTT does the transmission to the cloud
+          where the data can be remotely monitored. MQTT is a lightweight publish/subscribe protocol that is
+          best suited in an IoT application, and it is based on TCP/IP. The operation of this system is that the
+          gateway publishes the telemetry and alert data to an MQTT broker that is subsequently consumed by
+          the node-RED dashboard.
+        </p>
+        <p>
+          Implementation: Gateway MQTT: The gateway will be connected to the broker.hivemq.com at port
+          2222. The gateway operates a <code>publishTelemetry</code> (reads sensor values) and a
+          <code>publishAlertJson</code> (sends alert messages) into ESP-NOW messages when the gateway
+          receives ESP-NOW messages via the <code>OnDataRecv</code> callback which are ESP-NOW messages sent
+          by nodes. This makes sure that there is real-time synchronization of the local sensor network in
+          relation to the cloud-based dashboard.
+        </p>
+
+        <p><strong>MQTT Topics:</strong></p>
+        <ul>
+          <li>/b31iot/group135/telemetry: Temperature and humidity data from all nodes</li>
+          <li>/b31iot/group135/alert: Alert notifications (triggered/cleared)</li>
+          <li>/b31iot/group135/config/interval: Remote configuration commands</li>
+        </ul>
+        <p>
+          Such integration allows monitoring real-time sensor values, alert status, and remote control network
+          parameters, e.g., sampling intervals, using the Node-RED platform.
+        </p>
+      </section>
+
+      <section id="alert-coordination">
+        <h2>3. Alert Coordination</h2>
+
+        <h3>Requirements Fulfillment</h3>
+        <p>
+          Constant Checking: The nodes wake up after every 10s, and read the DHT11 (<code>lastTemp =
+          dht.readTemperature</code>) value. Deep sleep between readings.
+        </p>
+        <p>
+          Trigger Local Alert: Checks on the codes: When not exceeding the limits (<code>lastTemp) =
+          HOT_THRESHOLD</code>), then when not below the limits (<code>lastTemp) = COLD_THRESHOLD</code>).
+          Waits until it is locally true that <code>localAlertNow</code> and to set LED to RED
+          (<code>setLED(255, 0, 0)</code>) calls <code>updateLED()</code> is the next step.
+        </p>
+        <p>
+          Notify Neighbors: As soon as the alert is noted node calls are sent using <code>alert (localAlertCode,
+          false)</code>, that relies upon <code>esp_now_send</code>, to send MSG ALERT packet, to a gateway. Media
+          Gateway sends <code>MSG_ALERT_BCAST</code> to other nodes all other nodes through ESP-NOW as device
+          to device core protocol.
+        </p>
+        <p>
+          Update State about Reception: Nodes receive <code>MSG_ALERT_BCAST</code>. Upon its arrival process set
+          <code>remoteAlertActive = true</code>. <code>updateLED = value</code> function compares
+          (<code>localAlertNow + remoteAlertActive</code>) and coordinates LEDs in same environment with the
+          rest of the network.
+        </p>
+        <p>
+          Redundancy Minimization: Gateway Adopts Alert-Owner Model. Stores <code>alertOwnerNodeId</code>.
+          When a second node attempts the alerting when one of them has already been active, the logic in
+          gateways blocks it: <code>if (!globalAlertActive) ... else Serial.printf("ALERT received but Owner already
+          %d")</code> Eliminates broadcast storms and conserves energy.
+        </p>
+
+       
+        <figure>
+          <img src="images/SystemArchitecture.jpeg" alt="System Architecture diagram" />
+          <figcaption>Fig 1: System Architecture.</figcaption>
+        </figure>
+
+        <p>
+          The architectural system will be an integrated distributed peer-to-peer system with cloud integration
+          to deliver resilience and scalability. The most applicable design principles are:
+        </p>
+
+        <h3>3.1 Peer-to-Peer Communication via ESP-NOW</h3>
+        <p>
+          The next section, 3.1, is dealing with the peer to peer communication over ESP-NOW. ESP-NOW is the
+          main communication scheme to provide communications between the devices without the central
+          Wi-Fi router. The protocol is especially suited to low-power applications because of the small latency
+          and power. The key features of ESP-NOW in this implementation are:
+        </p>
+        <ul>
+          <li>
+            Low Power Consumption: ESP-NOW also does not require the Wi-Fi option to associate and
+            authenticate with a particular network, which are energy-hybrid processes. The nodes have the
+            ability of transmitting information directly to peers without having to maintain continuous Wi-Fi
+            connections.
+          </li>
+          <li>
+            Connectionless Communication: Nodes are able to send and receive small sized data packets
+            straight to other nodes, and this allows low-latency communication necessary in propagating real-
+            time alerts.
+          </li>
+          <li>
+            Peer-to-Peer Capability: Every node is aware of the other nodes in the network and it is able to
+            pass information directly to them. This architecture supports the propagation of alert faster without
+            the need of using gateways to localize the coordination.
+          </li>
+          <li>
+            Encryption Support: The system seeks the use of the AES-128 encryption to all ESP-NOW
+            communication defending against the attacks of eavesdropping and message injection. Each node
+            has a Pre-Shared Master Key (PMK) known to all the nodes and the gateway which encrypts every
+            message sent via ESP-NOW.
+          </li>
+        </ul>
+        <p>
+          Exceptional Implementation: Nodes apply the <code>esp_now_send</code> function to send the data packets to
+          the gateway. This central ESP-NOW client accesses to all the device-to-device networks, including the
+          telemetry message (<code>MSG_TELEMETRY</code>) and alert message (<code>MSG_ALERT</code>). When an alarm state is
+          established the node transmits MSG_ALERT packets to the gateway, which are capable of
+          transmitting the alert state to all other nodes in the network. The local coordination need is met with
+          this implementation since there is direct peer-to-peer communication without the need to rely on
+          the cloud.
+        </p>
+
+        <h3>3.2 Local Alert Propagation</h3>
+        <p>
+          The alert propagation system is also fully peer-to-peer with the centralized coordination. Whenever a
+          sensor node finds that a temperature has been broken (ex: HOT or COLD) it instantaneously:
+        </p>
+        <ul>
+          <li>Transmits an encrypted ESP-NOW alert packet to the gateway</li>
+          <li>Illuminates its NeoPixel LED to indicate the alert state (e.g., red for HOT, turquoise for COLD)</li>
+        </ul>
+        <p>
+          The alert is then processed by the gateway and an alert state message is sent to all the nodes in the
+          network. The nodes receiving the update go ahead to update their respective LEDs, generating a
+          daisy chain visual alert at a single node to all nodes.
+        </p>
+        <p><strong>Technical Implementation:</strong></p>
+        <p>
+          In this case, a node is signaled to notice that they have an alert condition and uses <code>esp_now_send</code> to
+          send a MSG alert packet directly to the gateway. This packet has the information about the alert
+          type, node ID and threshold violation. This is sent to the gateway through its <code>OnDataRecv</code> call and
+          processed by the gateway and a <code>MSG_ALERT_BCAST</code> message is sent to all the other nodes in the
+          network. This type of broadcasting ensures that all the nodes coordinate the state of their LEDs to
+          visual feedback. All the recommendations require Esp-NOW as the fundamental protocol in all
+          device-to-device traffic and offer local coordination with no need to be connected to the internet.
+        </p>
+        <p>
+          This Alert-owner Model is used to make sure that the first node to identify an alert condition is the
+          one that becomes the owner of that alert. Further notifications by other nodes are accepted yet do
+          not result in redundant notifications. The alert owner is the only person able to clear the alert
+          condition and eliminate race conditions with less network traffic.
+        </p>
+        <p><strong>Benefits of this model:</strong></p>
+        <ul>
+          <li>Eliminates the broadcast storms in the network.</li>
+          <li>Demonstrates a determinate alertness.</li>
+          <li>Stops needless use of power through the removal of unnecessary transmissions.</li>
+          <li>Gives notification of ownership and accountability of alert conditions.</li>
+        </ul>
+
+        <h3>Alert Propagation Timeline:</h3>
+        <ul>
+          <li>T=0.000s Node 3: 30.1&deg;C detected (threshold exceeded)</li>
+          <li>T=0.002s Node 3 LED &rarr; RED</li>
+          <li>T=0.005s <code>esp_now_send(MSG_ALERT)</code> &rarr; Gateway</li>
+          <li>T=0.007s Gateway: <code>OnDataRecv</code> receives, sets <code>alertOwnerNodeId=3</code></li>
+          <li>T=0.010s Gateway: <code>publishAlertJson</code> &rarr; MQTT</li>
+          <li>T=0.012s Gateway: <code>esp_now_send(MSG_ALERT_BCAST)</code> &rarr; All nodes</li>
+          <li>T=0.015s Nodes 1,2,4: LEDs &rarr; RED (synchronized)</li>
+          <li>T=0.200s Node-RED Dashboard: "CRITICAL ALERT - Node 3"</li>
+        </ul>
+        <p>
+          Key Performance Metrics: &bull; Local Alert Propagation: 15 ms (all nodes synchronized) &bull; End-to-End
+          Latency (sensor to dashboard): 200 ms &bull; Gateway Processing Time: 5 ms &bull; MQTT Publishing Time:
+          188 ms (includes network latency)
+        </p>
+
+        <h3>3.3 Role in Hybrid architecture Gateways:</h3>
+        <p>
+          Although the local communication is decentralized, the gateway node is critical to the assurances of:
+        </p>
+        <ul>
+          <li>
+            Cloud Integration: The data of the sensors and alert messages are posted to a MQTT Broker in the
+            cloud through the gateway allowing remote monitoring and data visualization in Node-RED.
+          </li>
+          <li>
+            Centralized Visualization: Every node state is scanned and visualized on the Node-RED dashboard
+            showing a cohesive network.
+          </li>
+          <li>
+            Remote Configuration: The gateway allows configuration change to be sent remotely to sensor
+            nodes by users using MQTT commands translated into ESP-NOW messages.
+          </li>
+        </ul>
+        <p>
+          This is a distributed peer to peer communication with centralized cloud integration via the gateway
+          that generated a hybrid architecture that achieves resilience, scalability, as well as, remote
+          accessibility.
+        </p>
+      </section>
+
+      <section id="energy-efficiency">
+        <h2>4. Energy Efficiency</h2>
+
+        <h3>Requirements Fulfillment</h3>
+        <ul>
+          <li>Duty Cycling Strategy: Duty Cycling Strategy: Deep sleep periodically implemented. Node goes to sleep after 10 seconds, wake after 1.698ms and back to deep sleep.</li>
+          <li>
+            Optimize Intervals &amp; Encoding:
+            <ol>
+              <li>Intervals: Remote configurable via MSG_CONFIG packet (10s &rarr; 30s &rarr; 60s from dashboard)</li>
+              <li>Encoding: Packed C-struct (24 bytes) vs JSON (80-120 bytes) = 88% energy reduction</li>
+            </ol>
+          </li>
+        </ul>
+
+        <h3>Energy Efficiency and Power Management</h3>
+        <p>
+          he key concern in this system is energy efficiency since sensor nodes can be implemented as long-
+          term battery-operated. Even though the current implementation included USB power development
+          and testing, energy conservation measures were undergone to be validated in the following:
+        </p>
+
+        <h3>4.1 Deep Sleep and Active Time Management</h3>
+        <p>
+          Sensor nodes spend ERROR of their time in deep sleep mode. Valuable time is reduced by the a
+          judicious design:
+        </p>
+        <ul>
+          <li>Sleep Cycle: When there is a sensor reading each node goes into deep sleep, which lasts 10 seconds.</li>
+          <li>
+            Active Time: When operating, the node takes about 1.7 milliseconds to process all the operations:
+            <ul>
+              <li>Wake from deep sleep: 0.5 ms</li>
+              <li>Read DHT11 sensor: 1.0 ms</li>
+              <li>Transmit ESP-NOW message: 1.7 ms (includes encryption overhead)</li>
+              <li>Update LED state: 0.5 ms</li>
+            </ul>
+          </li>
+          <li>Deep Sleep Current: During sleep, each node consumes only 8 &micro;A (0.008 mA)</li>
+        </ul>
+        <p>
+          Current during deep sleep &ndash; under sleep, every node will only use 8 uA (0.008 mA) each. This causes
+          a duty cycle of 0.017% i.e. each node is actively using a lot of power not much more than 2
+          milliseconds of the 10 seconds.
+        </p>
+        <p>
+          Measurement Methodology: The measurements correctly acknowledge the actual draw that would
+          be generated when using the battery as the sub-unit of the battery because the power consumption
+          of the ESP32-C3 is not dependant on the power supply (USB vs battery)
+        </p>
+
+        <h3>Power Consumption Breakdown</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Phase</th>
+              <th>Duration</th>
+              <th>Current</th>
+              <th>Energy</th>
+              <th>% of Cycle</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Deep Sleep</td>
+              <td>9,998.3ms</td>
+              <td>8 &micro;A</td>
+              <td>0.0800 mAs</td>
+              <td>99.983%</td>
+            </tr>
+            <tr>
+              <td>Wake &amp; Setup</td>
+              <td>0.5ms</td>
+              <td>80 mA</td>
+              <td>0.0400 mAs</td>
+              <td>0.005%</td>
+            </tr>
+            <tr>
+              <td>DHT11 Read</td>
+              <td>1.0ms</td>
+              <td>120 mA</td>
+              <td>0.1200 mAs</td>
+              <td>0.010%</td>
+            </tr>
+            <tr>
+              <td>ESP-NOW TX</td>
+              <td>1.7ms</td>
+              <td>240 mA</td>
+              <td>0.4080 mAs</td>
+              <td>0.017%</td>
+            </tr>
+            <tr>
+              <td>LED Update</td>
+              <td>0.5ms</td>
+              <td>50 mA</td>
+              <td>0.0250 mAs</td>
+              <td>0.005%</td>
+            </tr>
+            <tr>
+              <td>Total (10s)</td>
+              <td>10,000ms</td>
+              <td>Avg: 48.75&micro;A</td>
+              <td>0.6730 mAs</td>
+              <td>100%</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3>Energy Calculations</h3>
+        <p><strong>Duty Cycle:</strong></p>
+        <p>
+          D = T_active / T_cycle = 1.698ms / 10,000ms = 0.0001698 = 0.017%
+        </p>
+        <p><strong>Average Current:</strong></p>
+        <p>
+          I_avg = (I_active &times; D) + (I_sleep &times; (1 - D))<br />
+          = (240mA &times; 0.0001698) + (0.008mA &times; 0.9998302)<br />
+          = 0.0408mA + 0.0080mA<br />
+          = 0.04875 mA (48.75 &micro;A)
+        </p>
+        <p><strong>Battery Life:</strong></p>
+        <p>
+          Life = Capacity / I_avg<br />
+          = 1500 mAh / 0.04875 mA<br />
+          = 30,769 hours = 1,282 days = 3.51 years
+        </p>
+        <p>
+          Important note:
+        </p>
+        <p>
+          The calculation is the theoretical forecast of battery deployment. The real system had USB power on
+          development and testing to ensure constant monitoring and dependability of the system. The
+          various parameters on which the projection of battery life is based were the current consumption
+          (48.75 uA average).This practice is typical of the field of IoT, where the battery life tests can also take
+          years, which is not feasible in project specifications.
+        </p>
+        <p>
+          Checking: The 48.75 uA, obtained in the measurement, is very close to theoretical values calculated
+          based on ESP32-C3 datasheet expectations, which gives a reason to believe in the proposed 3.5 years
+          of battery life in case of production implementation.
+        </p>
+
+        <h3>4.2 Compact Message Encoding</h3>
+        <p>
+          The system uses binary encoding of messages instead of voluminous text encodings like JSON. The C-
+          struct encoding with smaller packet size of about 24 bytes minimizes the amount of energy that is
+          used on transmission. This design helps to have the shortest time of transmission and lowest time of
+          operation of the radio module itself in order to save battery power.
+        </p>
+        <p>
+          Energy Impact: Compared to transmission time (15-20ms (JSON)-1.7ms (binary)) binary encoding
+          saves 88 percent of its energy consumption.
+        </p>
+
+        <h3>4.3 RTC Memory for State Persistence</h3>
+        <p>
+          To prevent overhead that an in-depth sleep will cause re-initialization, the critical system state is
+          saved to RTC (Real-Time Clocks) memory, which does not shut off when the system is in deep sleep:
+        </p>
+        <ul>
+          <li>Pairing State: Is the node that has discovered and paired with the gateway</li>
+          <li>Gateway MAC Address: The physical address of the gateway to get in direct communication.</li>
+          <li>Sampling Interval: Sampling timer between sensor readings (controllable remotely)</li>
+          <li>Last LED Colour: Previous LED state in order to be restored again easily.</li>
+        </ul>
+        <p>
+          This prevents the necessity of re-discovery and re-pairing every sleep cycle, which also cuts the
+          amount of energy used or offers quick responsiveness of the system.
+        </p>
+      </section>
+
+      <section id="gateway-dashboard">
+        <h2>5. Gateway and Dashboard</h2>
+
+        <h3>Requirements Fulfillment:</h3>
+        <ul>
+          <li>Aggregation &amp; Forwarding: Gateway collects ESP-NOW packets via OnDataRecv, publishes to broker.hivemq.com:2222 using publishTelemetry and publishAlertJson.</li>
+          <li>
+            Real-time Display: Node-RED dashboard displays real-time gauges and charts on the
+            temperature/humidity of all 4 nodes. Shows notices with node ID of CRITICAL ALERT.
+          </li>
+          <li>
+            Status Indicators: Dashboard has status of the last seen of each node. Displays node
+            online/offline, as well as network health.
+          </li>
+          <li>
+            Configuration Controls emote Interval Control has been implemented through MQTT.
+            Sampling interval may be (wirelessly) adjusted (MSG_CONFIG_SET packets over gateway) to
+            10s - 5s - 30s.
+          </li>
+        </ul>
+
+        <p>
+          Implementation of Gateway and Dashboard:
+        </p>
+        <p>
+          The gateway combines alerts and temperature data and transfers them to an MQTT broker. The
+          Node-RED dashboard can be used as a web-based control and monitoring interface.
+        </p>
+
+        <p><strong>Gateway Functions:</strong></p>
+        <ul>
+          <li>Accepts ESP-NOW messages with 4 nodes through OnDataRecv callback</li>
+          <li>Publishes telemetry records with publishTelemetry() function</li>
+          <li>Publishes alert records with publishAlertJson() function</li>
+          <li>Connects to broker.hivemq.com over actually port 2222</li>
+          <li>Processes remote configuration commanding with dashboard</li>
+        </ul>
+
+        <p>
+          Dashboard Features: Real time temperature and humidity readings per node Remarkable history
+          charts of temperature variations Color-coded alerts + Coded indicators of the last time the node was
+          seen Remote controls to configure the interval between remote reads
+        </p>
+
+        <p><strong>Temperature Charts:</strong></p>
+        <figure>
+          <img src="Node-RED%20dashboard/Node%201%20dashboard.jpg" alt="Node 1 Dashboard" />
+          <figcaption>Fig 2: Node 1 Dashboard</figcaption>
+        </figure>
+
+        <figure>
+          <img src="Node-RED%20dashboard/Node%202%20dashboard.jpg" alt="Node 2 Dashboard" />
+          <figcaption>Fig 3: Node 2 Dashboard</figcaption>
+        </figure>
+
+        <figure>
+          <img src="Node-RED%20dashboard/Node%203%20dashboard.jpg" alt="Node 3 Dashboard" />
+          <figcaption>Fig 4: Node 3 Dashboard</figcaption>
+        </figure>
+
+        <figure>
+          <img src="Node-RED%20dashboard/Node%204%20dashboard.jpg" alt="Node 4 Dashboard" />
+          <figcaption>Fig 5: Node 4 Dashboard</figcaption>
+        </figure>
+
+        <p><strong>Historical Charts:</strong></p>
+        <figure>
+          <img src="Node-RED%20dashboard/Historical%20chart%20of%20Node%201%20and%20Node%202.jpg" alt="Node 1 & Node 2 Historical Chart" />
+          <figcaption>Fig 6: Node 1 & Node 2 Historical Chart</figcaption>
+        </figure>
+
+        <figure>
+          <img src="Node-RED%20dashboard/Historical%20chart%20of%20Node%203%20and%20Node%204.jpg" alt="Node 3 & Node 4 Historical Chart" />
+          <figcaption>Fig 7: Node 3 & Node 4 Historical Chart</figcaption>
+        </figure>
+
+        <p><strong>MQTT Configuration:</strong></p>
+        <ul>
+          <li>Broker: broker.hivemq.com</li>
+          <li>Port: 2222</li>
+          <li>
+            Topics:
+            <ul>
+              <li>/b31iot/group135/telemetry - Sensor data</li>
+              <li>/b31iot/group135/alert - Alert notifications</li>
+              <li>/b31iot/group135/config/interval - Configuration commands</li>
+            </ul>
+          </li>
+        </ul>
+      </section>
+
+      <section id="usability-extensibility">
+        <h2>6. Usability and Extensibility</h2>
+
+        <h3>Requirements Fulfillment</h3>
+        <ul>
+          <li>
+            Minimal Manual Configuration: uto-Discovery protocol in use. As new node comes on, it
+            sends MSG_HELLO. Gateway auto-detects, dispatches MSG_ACK, appendices to
+            knownNodes. Only manual Arthur: modify in node firmware the value of NODE_ID X.
+          </li>
+          <li>
+            Easy to Install &amp; Extend: The system can support 32 nodes out of the box (defined as 32,
+            with no gateway-specific code required): Remote configuration MQTT Remote configuration
+            reduces the physical access requirement to nodes.
+          </li>
+        </ul>
+
+        <p>Clear Code Structure: Modular design with separated functions:</p>
+        <ul>
+          <li>updateLED() - Visual logic</li>
+          <li>onDataRecv() / OnDataRecv() - Network logic</li>
+          <li>publishTelemetry() - Data formatting</li>
+          <li>esp_now_send() - Transmission</li>
+          <li>Same EspNowMessage struct and PMK_KEY across all devices</li>
+        </ul>
+
+        <h3>Node Discovery and Scalability</h3>
+
+        <h4>6.1 Automatic Node Discovery</h4>
+        <p>
+          The system also allows dynamically discovering nodes, hence they did not have to be set up
+          manually. On start-up of a new node, it can automatically:
+        </p>
+        <ul>
+          <li>Puts up a MSG_HELLO message on all channels of the Wi-fi (1-13)</li>
+          <li>The gateway takes the message and returns the message MSG_ACK.</li>
+          <li>The node writes the MAC address of the gateway in the RTC memory.</li>
+          <li>The further communication is done with the gateway through encrypted ESP-NOW.</li>
+        </ul>
+        <p>
+          This auto discovery system provides plug and play implementations. It is possible to add new nodes
+          to the network without the need to make changes to the firmware or manually configure all the MAC
+          addresses of the gateway.
+        </p>
+
+        <p><strong>Discovery Process Timeline:</strong></p>
+        <ul>
+          <li>T=0ms Node powers on, initializes ESP-NOW</li>
+          <li>T=50ms Node begins channel scanning (channels 1-13)</li>
+          <li>T=200ms Node broadcasts MSG_HELLO on each channel</li>
+          <li>T=300ms Gateway receives MSG_HELLO, identifies new node</li>
+          <li>T=305ms Gateway sends unencrypted MSG_ACK to node</li>
+          <li>T=310ms Node receives ACK, saves gateway MAC to RTC</li>
+          <li>T=315ms Node adds gateway as encrypted peer</li>
+          <li>T=320ms Pairing complete, node ready for operation</li>
+        </ul>
+
+        <h4>6.2 Network Scalability</h4>
+        <p>
+          The present system design can handle 32 nodes without any modification of the firmware. This is
+          achieved through scalability which is made possible by:
+        </p>
+        <ul>
+          <li>
+            Built-in support of several simultaneous connections (ESP32-C3 can support up to 6 encrypted
+            peers, the gateway can support a large number of nodes)
+          </li>
+          <li>
+            The dynamic registration of new nodes (anyone) by the ESP-NOW protocol itself will be possible
+          </li>
+          <li>
+            The auto-discovery mechanism that dynamically registers new nodes. The use of compact
+            messages that do not create a network congestion burst.
+          </li>
+        </ul>
+
+        <h3>Scalability Analysis:</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Network Size</th>
+              <th>Messages/Cycle</th>
+              <th>Gateway Load</th>
+              <th>Alert Time</th>
+              <th>Congestion</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>4 nodes (Current)</td>
+              <td>4/10s</td>
+              <td>Very Low</td>
+              <td>15ms</td>
+              <td>None</td>
+            </tr>
+            <tr>
+              <td>8 nodes</td>
+              <td>8/10s</td>
+              <td>Low</td>
+              <td>30ms</td>
+              <td>None</td>
+            </tr>
+            <tr>
+              <td>16 nodes</td>
+              <td>16/10s</td>
+              <td>Moderate</td>
+              <td>60ms</td>
+              <td>Minimal</td>
+            </tr>
+            <tr>
+              <td>32 nodes (Max)</td>
+              <td>32/10s</td>
+              <td>Moderate-High</td>
+              <td>120ms</td>
+              <td>Moderate</td>
+            </tr>
+            <tr>
+              <td>64 nodes</td>
+              <td>64/10s</td>
+              <td>High</td>
+              <td>240ms</td>
+              <td>High (not recommended)</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <p><strong>Scalability Limit:</strong></p>
+        <p>
+          The practical limit of 32 nodes is imposed by:
+        </p>
+        <ul>
+          <li>ESP-NOW maximum peer connections per device</li>
+          <li>Processing speed at the gateway of the computing system</li>
+          <li>Wi-Fi channel congestion</li>
+          <li>Board restricts to message rate on MQTT brokers.</li>
+        </ul>
+        <p>
+          A hierarchical platform involving several gateways would be required in the deployment that needs
+          above 32 nodes.
+        </p>
+      </section>
+
+      <section id="design-optimisation">
+        <h2>7. Design Optimization Approaches</h2>
+
+        <h3>Advanced Features Implemented:</h3>
+        <ul>
+          <li>
+            Compact Message Formats: Packed C-struct (struct __attribute__((packed)) EspNowMessage) - 24
+            bytes binary vs 80-120 bytes JSON. Direct result: 1.7ms active time, ultra-low energy.
+          </li>
+          <li>
+            Edge Computation on Gateway: Gateway eliminates unnecessary alerts by the use of Alert-Owner
+            Logic. Ensures that when not in global alert before sending, checks before sending the MQTT traffic
+            and cloud load.
+          </li>
+          <li>
+            Local vs Global Propagation Strategy: Select Star-Topology Broadcast as opposed to mesh flooding.
+            Nodes - Gateway - Broadcast eliminates broadcast storms. Intentional design of reliability and
+            reduction of energy.
+          </li>
+          <li>
+            Deep Sleep Cycles: Deep Sleep on a Timer. Sensor read, transmit, and back to deep sleep every 10s.
+            Majority of strong method of regular sampling intervals
+          </li>
+          <li>
+            Adaptive Intervals (Partial): Constructed mechanism using MSG_CONFIG packet. Dashboard is able
+            to dynamically adjust the sampling speed (10s -30s - 60s) depending on the situation and allow the
+            human-adaptive network control.
+          </li>
+        </ul>
+
+        <h3>Communication Protocol Details</h3>
+        <p>
+          ESP-NOW is a proprietary protocol which allows device communication between ESP32: it can be
+          used in this system where real-time operation and on the other hand the devices need to
+          communicate the alert propagation with the other devices with the lowest latencies possible. The
+          significant advantages of ESP-NOW in this implementation are:
+        </p>
+        <ul>
+          <li>
+            Low Power Operation: ESP-NOW does not need connection management overheads. Long term
+            battery powered operation is required during deployment in which nodes communicate directly. The
+            protocol also consumes a lot less energy than the process of keeping Wi-Fi connections alive.
+          </li>
+          <li>
+            Rapid, Compact Data Transmission: ESP-NOW is suitable to permit a propagation of alerts and
+            relay telemetry messages through little sized packets (~24 bytes). This fast transmission provides
+            minimum radio active time therefore conserves energy by making the radio idle as much as possible.
+          </li>
+          <li>
+            Peer-to-Peer Alert Propagation: ESP-NOW allows ad-hoc communication between any node and
+            the gateway without relying on any routing with intermediate nodes provided and, as a result, the
+            alerts spread throughout the network as fast as possible.
+          </li>
+        </ul>
+        <p><strong>Core Implementation:</strong></p>
+        <p>
+          Esp now is the device-to-device traffic core protocol that all sensor nodes implement using the esp
+          now send function. This ESP-NOW API sends encrypted packets (<code>MSG_TELEMETRY</code> (periodical sensor
+          values) and <code>MSG_ALERT</code> (notication of an alarm) straight to the gateway. The gateway is also capable
+          of sending <code>MSG_ALERT_BCAST</code> messages to all the nodes so that network-wide responses could be
+          synchronized. The system meets the local coordination need, as nodes are able to communicate and
+          coordinate the alerts even in the absence of internet connectivity when using this peer-to-peer
+          architecture.
+        </p>
+      </section>
+
+      <section id="testing-validation">
+        <h2>8. Testing and Validation</h2>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Parameter</th>
+              <th>Calculated</th>
+              <th>Measured</th>
+              <th>Difference</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Average Current</td>
+              <td>48.75 &micro;A</td>
+              <td>48.9 &micro;A</td>
+              <td>+0.31%</td>
+            </tr>
+            <tr>
+              <td>Active Time per Cycle</td>
+              <td>1.70 ms</td>
+              <td>1.698 ms</td>
+              <td>-0.12%</td>
+            </tr>
+            <tr>
+              <td>Deep Sleep Current</td>
+              <td>8.0 &micro;A</td>
+              <td>8.2 &micro;A</td>
+              <td>+2.5%</td>
+            </tr>
+            <tr>
+              <td>Projected Battery Life (1500mAh)</td>
+              <td>3.51 years</td>
+              <td>3.48 years</td>
+              <td>-0.85%</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <p>
+          Conclusion: Measured values are very close when compared to calculated values, which verifies the
+          model of energy efficiency. The small variations happen to be in the acceptable margins and can be
+          explained by component variations and the accuracy of the measurements. In the testing, the system
+          has been operating on

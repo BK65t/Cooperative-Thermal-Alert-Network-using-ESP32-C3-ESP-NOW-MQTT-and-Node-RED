@@ -221,7 +221,7 @@
         <li><a href="#design-optimisation">7. Design Optimization Approaches</a></li>
         <li><a href="#testing-validation">8. Testing and Validation</a></li>
         <li><a href="#critical-analysis">9. Critical Analysis</a></li>
-        <li><a href="#conclusion">11. Conclusion</a></li>
+        <li><a href="#conclusion">10. Conclusion</a></li>
       </ul>
     </section>
 
@@ -1293,4 +1293,185 @@
           Conclusion: Measured values are very close when compared to calculated values, which verifies the
           model of energy efficiency. The small variations happen to be in the acceptable margins and can be
           explained by component variations and the accuracy of the measurements. In the testing, the system
-          has been operating on
+          has been operating on           has been operating on a USB power supply, but the current consumption can be taken as reliable in
+          the project of battery life where the use of the system is conducted in production.
+        </p>
+      </section>
+
+      <section id="critical-analysis">
+        <h2>9. Critical Analysis</h2>
+
+        <h3>System Strengths</h3>
+        <p>The system has managed to exhibit some of its main strengths:</p>
+        <ul>
+          <li>
+            <strong>Exceptional Energy Efficiency:</strong> 3.5 years of battery life on a single 1500mAh cell is a substantial
+            increase in battery life relative to many typical IoT sensors (often 8–12 months). The main factors
+            that make this possible include the 99.983% duty cycle and the compact binary messaging.
+          </li>
+          <li>
+            <strong>Secure Environment:</strong> All communication between the nodes and the gateway is protected by
+            AES-128 encryption to prevent both eavesdropping and message-injection attacks. The encryption
+            is hardware-accelerated on the ESP32-C3, keeping performance overhead small.
+          </li>
+          <li>
+            <strong>High Reliability:</strong> 99.98% uptime and 0.02% packet loss over 72 hours are strong reliability
+            values for a wireless sensor network. In testing, the system experienced zero crashes and zero
+            false alerts.
+          </li>
+          <li>
+            <strong>Low Latency:</strong> End-to-end alert response time (sensor to dashboard) of around 200ms and
+            local network synchronization of 15ms provide almost instantaneous alert propagation.
+          </li>
+          <li>
+            <strong>Plug-and-Play Operation:</strong> Automatic discovery of nodes without manual configuration.
+            New nodes can join the network without changing firmware, thanks to the auto-discovery
+            and pairing process.
+          </li>
+          <li>
+            <strong>Scalable Design:</strong> Scalability up to 32 nodes with linear performance characteristics makes
+            the system suitable for small and medium-sized deployments.
+          </li>
+        </ul>
+
+        <h3>System Strengths Summary</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Strength</th>
+              <th>Evidence</th>
+              <th>Industry Comparison</th>
+              <th>Benefit</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Energy Efficiency</td>
+              <td>3.5-year battery life</td>
+              <td>3–5× better than many competitors</td>
+              <td>Reduced maintenance, lower TCO</td>
+            </tr>
+            <tr>
+              <td>Security</td>
+              <td>AES-128 encryption, 0 breaches</td>
+              <td>Comparable to WPA2-Personal</td>
+              <td>Data protection and privacy</td>
+            </tr>
+            <tr>
+              <td>Reliability</td>
+              <td>99.98% uptime, 0.02% loss</td>
+              <td>Superior to many typical IoT setups</td>
+              <td>Mission-critical capable</td>
+            </tr>
+            <tr>
+              <td>Responsiveness</td>
+              <td>200ms alert latency</td>
+              <td>Up to 10× faster than cloud-only approaches</td>
+              <td>Real-time alerts</td>
+            </tr>
+            <tr>
+              <td>Usability</td>
+              <td>Zero-config auto-discovery</td>
+              <td>Uncommon in this peer class</td>
+              <td>Easy deployment</td>
+            </tr>
+            <tr>
+              <td>Scalability</td>
+              <td>32 nodes, linear scaling</td>
+              <td>Adequate for SMB-scale deployments</td>
+              <td>Future-proof architecture</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3>Future Improvements</h3>
+        <ul>
+          <li>
+            <strong>Adaptive Duty Cycling:</strong> Introduce a variable sampling rate depending on temperature
+            stability. For example, sample every 2 seconds during thermal events, and every 60 seconds when
+            temperatures are stable. This could extend battery life to around 5–7 years while preserving
+            responsiveness during critical events.
+          </li>
+          <li>
+            <strong>Gateway Redundancy:</strong> Add an automatic failover gateway. If the primary gateway fails,
+            a secondary gateway should take over within 5–10 seconds to maintain connectivity and cloud
+            coordination.
+          </li>
+          <li>
+            <strong>Improved Security (Production-grade):</strong>
+            <ul>
+              <li>Use unique device certificates instead of a shared PMK.</li>
+              <li>Rotate keys automatically on a regular schedule (e.g., weekly or monthly).</li>
+              <li>Use MQTT username/password authentication.</li>
+              <li>Use MQTT over TLS for secure cloud communication.</li>
+              <li>Enable secure boot and flash encryption on the ESP32-C3.</li>
+            </ul>
+          </li>
+          <li>
+            <strong>Automatic Firmware Updates (OTA):</strong> Implement secure over-the-air firmware updates.
+            The gateway can download new firmware from the cloud and deliver it to nodes over ESP-NOW,
+            using cryptographic signatures to verify authenticity.
+          </li>
+        </ul>
+
+        <h3>Medium Priority Enhancements</h3>
+        <ul>
+          <li>
+            <strong>Precision Sensor Upgrade:</strong> Upgrade to higher-precision sensors such as SHT31
+            (&plusmn;0.3&deg;C, &plusmn;2% RH) where more accurate monitoring is needed (e.g., cold-chain pharmaceuticals
+            or precision agriculture).
+          </li>
+          <li>
+            <strong>Machine Learning Integration:</strong> Run lightweight ML models on the gateway (e.g.,
+            TensorFlow Lite) for anomaly detection and predictive analytics. This would allow forecasting
+            temperature trends and sending early warnings before thresholds are breached.
+          </li>
+          <li>
+            <strong>Mobile Application:</strong> Develop native iOS and Android applications in addition to the
+            web-based dashboard so that real-time alerts can be delivered as push notifications.
+          </li>
+          <li>
+            <strong>Multi-sensor Support:</strong> Extend the system to support a wider range of environmental
+            sensors, such as:
+            <ul>
+              <li>Air quality (CO<sub>2</sub>, VOC, PM2.5)</li>
+              <li>Barometric pressure</li>
+              <li>Light intensity</li>
+              <li>Motion detection (PIR sensors)</li>
+            </ul>
+          </li>
+        </ul>
+      </section>
+
+      <section id="conclusion">
+        <h2>10. Conclusion</h2>
+        <p>
+          This Cooperative Thermal Alert Network is a demonstration of an energy-efficient, secure,
+          and reliable IoT infrastructure built on ESP32-C3 microcontrollers using ESP-NOW for local
+          communication and MQTT/Node-RED for cloud integration. The system successfully addresses
+          the challenge of designing a distributed sensor network that balances responsiveness, reliability,
+          and extreme energy efficiency.
+        </p>
+
+        <h3>Key Achievements</h3>
+        <ul>
+          <li>Projected 3.5-year lifetime on a single 1500mAh cell with an active duty cycle of just 0.017%.</li>
+          <li>Protection against eavesdropping and injection attacks through AES-128-encrypted ESP-NOW communication.</li>
+          <li>End-to-end sensor-to-dashboard alert latency of around 200ms.</li>
+          <li>Demonstrated 72 hours of operation with 99.98% uptime and only 0.02% packet loss.</li>
+          <li>Zero-configuration node discovery, enabling automatic node onboarding (plug-and-play).</li>
+          <li>Scalable star topology supporting up to 32 nodes with linear scaling characteristics.</li>
+        </ul>
+
+        <p>
+          Overall, the project demonstrates a fully integrated, scalable IoT system that combines peer-to-peer
+          networking, cloud connectivity, and low-power techniques. The Alert-Owner model prevents
+          broadcast storms while still providing global synchronization, and the hybrid star topology
+          balances local autonomy with centralised cloud-based monitoring and control.
+        </p>
+      </section>
+    </main>
+  </div>
+</body>
+</html>
+
